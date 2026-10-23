@@ -2365,6 +2365,8 @@
     <system:String x:Key="string_password">Password</system:String>
     <system:String x:Key="string_lZMAStoragePath">LZMA storage path</system:String>
     <system:String x:Key="string_manifestsStoragePath">Manifests storage path</system:String>
+    <system:String x:Key="string_updaterServiceHostKeyFingerprint">Trusted SSH host key (SHA256:…)</system:String>
+    <system:String x:Key="string_tooltip_updaterServiceHostKeyFingerprint">Required for ftp.me3tweaks.com:22. Obtain the SHA256 host-key fingerprint from the service administrator through an authenticated channel. Never trust a key just because a connection presents it. Verify rotations before changing this value.</system:String>
     <system:String x:Key="string_interp_updaterServiceDeltaMessageHeader">The following delta will be applied to the ME3Tweaks Updater Service for {0}:</system:String>
     <!-- 0=ModName -->
     <system:String x:Key="string_interp_updaterServiceDeltaConfirmationHeader">The following delta will be applied to the ME3Tweaks Updater Service for {0}:</system:String>

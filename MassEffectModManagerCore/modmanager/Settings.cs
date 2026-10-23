@@ -189,6 +189,13 @@ namespace ME3TweaksModManager.modmanager
             set => SetProperty(ref _updaterServiceUsername, value);
         }
 
+        private static string _updaterServiceHostKeyFingerprint;
+        public static string UpdaterServiceHostKeyFingerprint
+        {
+            get => _updaterServiceHostKeyFingerprint;
+            set => SetProperty(ref _updaterServiceHostKeyFingerprint, value);
+        }
+
         private static string _selectedFilters;
         public static string SelectedFilters
         {
@@ -566,6 +573,7 @@ namespace ME3TweaksModManager.modmanager
             PlayDialogSounds = LoadSettingBool(settingsIni, "UI", "PlayDialogSounds", true);
 
             UpdaterServiceUsername = LoadSettingString(settingsIni, "UpdaterService", "Username", null);
+            UpdaterServiceHostKeyFingerprint = LoadSettingString(settingsIni, "UpdaterService", "HostKeyFingerprint", null);
             UpdaterServiceLZMAStoragePath = LoadSettingString(settingsIni, "UpdaterService", "LZMAStoragePath", null);
             UpdaterServiceManifestStoragePath = LoadSettingString(settingsIni, "UpdaterService", "ManifestStoragePath", null);
 
@@ -797,6 +805,7 @@ namespace ME3TweaksModManager.modmanager
                     SaveSettingBool(settingsIni, "Logging", "LogModMakerCompiler", LogModMakerCompiler);
                     SaveSettingBool(settingsIni, "Logging", "EnableTelemetry", EnableTelemetry);
                     SaveSettingString(settingsIni, "UpdaterService", "Username", UpdaterServiceUsername);
+                    SaveSettingString(settingsIni, "UpdaterService", "HostKeyFingerprint", UpdaterServiceHostKeyFingerprint);
                     SaveSettingString(settingsIni, "UpdaterService", "LZMAStoragePath", UpdaterServiceLZMAStoragePath);
                     SaveSettingString(settingsIni, "UpdaterService", "ManifestStoragePath", UpdaterServiceManifestStoragePath);
                     SaveSettingBool(settingsIni, "UI", "DeveloperMode", DeveloperMode);
