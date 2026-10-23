@@ -175,6 +175,7 @@
 		<EmbeddedResource Include="modmanager\squadmates\**\*.pcc" />
 		<EmbeddedResource Include="modmanager\merge\game2email\**\*.pcc" />
 		<EmbeddedResource Include="modmanager\licenses\minhook.txt" />
+		<EmbeddedResource Include="modmanager\licenses\7-Zip.txt" />
 		<EmbeddedResource Include="modmanager\me3tweaks\LiveIni.bin" />
 		<EmbeddedResource Include="modmanager\me3tweaks\PermissionsGranter.exe" />
 		<EmbeddedResource Include="modmanager\meim\propertymaps\BioEngine.xml" />
