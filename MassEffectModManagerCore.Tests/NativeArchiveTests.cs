@@ -10,6 +10,30 @@ namespace ME3TweaksModManager.Tests
     [TestClass]
     public class NativeArchiveTests
     {
+        [DataTestMethod]
+        [DataRow("../outside.txt")]
+        [DataRow("..\\outside.txt")]
+        public void DefaultExtractionRejectsTraversal(string entryName)
+        {
+            var root = Path.Combine(Path.GetTempPath(), "M3ArchiveTest-" + Guid.NewGuid());
+            Directory.CreateDirectory(root);
+            try
+            {
+                var zipPath = Path.Combine(root, "unsafe.zip");
+                using (var zip = ZipFile.Open(zipPath, ZipArchiveMode.Create))
+                using (var writer = new StreamWriter(zip.CreateEntry(entryName).Open()))
+                    writer.Write("must stay inside extraction directory");
+
+                using var archive = new SevenZipExtractor(zipPath);
+                Assert.Throws<SevenZipException>(() => archive.ExtractArchive(Path.Combine(root, "extracted")));
+                Assert.IsFalse(File.Exists(Path.Combine(root, "outside.txt")));
+            }
+            finally
+            {
+                Directory.Delete(root, true);
+            }
+        }
+
         // Deliberately independent of GlobalTest.Init(), game data and online services.
         [TestMethod]
         public void NativeLibraryExtractsAndCreatesModArchives()

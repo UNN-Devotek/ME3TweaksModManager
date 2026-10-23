@@ -342,6 +342,19 @@ namespace SevenZip
                         _archive.GetProperty(index, ItemPropId.IsDirectory, ref data);
                         try
                         {
+                            // Caller-provided mappings intentionally support multiple destinations.
+                            // Default extraction must never let an archive choose a path outside its root.
+                            if (outputFilenameMapping == null)
+                            {
+                                var root = Path.GetFullPath(_directory);
+                                var destination = Path.GetFullPath(fileName);
+                                var rootPrefix = Path.EndsInDirectorySeparator(root) ? root : root + Path.DirectorySeparatorChar;
+                                var isRootDirectory = NativeMethods.SafeCast(data, false) &&
+                                    string.Equals(destination, root, StringComparison.OrdinalIgnoreCase);
+                                if (!isRootDirectory && !destination.StartsWith(rootPrefix, StringComparison.OrdinalIgnoreCase))
+                                    throw new SevenZipArchiveException("Archive entry is outside the extraction directory.");
+                                fileName = destination;
+                            }
                             ValidateFileNameAndCreateDirectory(fileName);
                         }
                         catch (Exception e)
