@@ -40,6 +40,7 @@
                 <StackPanel Margin="15,0,0,0" IsEnabled="{Binding OperationInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}">
                     <xctk:WatermarkTextBox Watermark="{DynamicResource string_username}" Text="{Binding Username}" />
                     <xctk:WatermarkPasswordBox Name="Password_TextBox" Watermark="{DynamicResource string_password}" />
+                    <xctk:WatermarkTextBox Watermark="{DynamicResource string_updaterServiceHostKeyFingerprint}" Text="{Binding HostKeyFingerprint}" ToolTip="{DynamicResource string_tooltip_updaterServiceHostKeyFingerprint}" />
                     <xctk:WatermarkTextBox Watermark="{DynamicResource string_lZMAStoragePath}" Text="{Binding LZMAStoragePath}" />
                     <xctk:WatermarkTextBox Watermark="{DynamicResource string_manifestsStoragePath}" Text="{Binding ManifestStoragePath}" />
                     <DockPanel HorizontalAlignment="Stretch">

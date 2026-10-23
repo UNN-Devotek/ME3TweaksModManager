@@ -175,6 +175,7 @@
 		<EmbeddedResource Include="modmanager\squadmates\**\*.pcc" />
 		<EmbeddedResource Include="modmanager\merge\game2email\**\*.pcc" />
 		<EmbeddedResource Include="modmanager\licenses\minhook.txt" />
+		<EmbeddedResource Include="modmanager\licenses\7-Zip.txt" />
 		<EmbeddedResource Include="modmanager\me3tweaks\LiveIni.bin" />
 		<EmbeddedResource Include="modmanager\me3tweaks\PermissionsGranter.exe" />
 		<EmbeddedResource Include="modmanager\meim\propertymaps\BioEngine.xml" />
@@ -202,21 +203,21 @@
 		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="JetBrains.Profiler.Api" Version="1.4.11" />
 		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="JetBrains.Profiler.SelfApi" Version="2.5.16" />
 		<PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.6.0" />
-		<PackageReference Include="OpenTelemetry" Version="1.15.0" />
+		<PackageReference Include="OpenTelemetry" Version="1.15.3" />
 		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
 		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.142" />
 		<PackageReference Include="MvvmValidation" Version="3.1.2" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1" />
 		<PackageReference Include="Octokit" Version="14.0.0" />
-		<PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.15.0" />
+		<PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.15.3" />
 		<PackageReference Include="Pathoschild.FluentNexus" Version="1.0.5" />
 		<PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
 		<PackageReference Include="Serilog" Version="4.3.1" />
 		<PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
 		<PackageReference Include="SingleInstanceCore" Version="2.2.2" />
-		<PackageReference Include="SSH.NET" Version="2025.1.0" />
+		<PackageReference Include="SSH.NET" Version="2026.0.0" />
 		<PackageReference Include="WatsonWebsocket" Version="4.1.8" />
 		<PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
 	</ItemGroup>

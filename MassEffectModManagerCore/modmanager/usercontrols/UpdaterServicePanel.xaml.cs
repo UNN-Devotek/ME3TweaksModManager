@@ -39,6 +39,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public Mod mod { get; }
         public string CurrentActionText { get; private set; }
         public string Username { get; set; }
+        public string HostKeyFingerprint { get; set; }
         public string ChangelogText { get; set; }
         public string ManifestStoragePath { get; set; }
         public string LZMAStoragePath { get; set; }
@@ -114,6 +115,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     if (authenticated.HasValue && authenticated.Value)
                     {
                         Settings.UpdaterServiceUsername = Username;
+                        Settings.UpdaterServiceHostKeyFingerprint = HostKeyFingerprint.Trim();
                         Settings.UpdaterServiceLZMAStoragePath = LZMAStoragePath;
                         Settings.UpdaterServiceManifestStoragePath = ManifestStoragePath;
                         //Settings.Save();
@@ -186,11 +188,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             InitializeComponent();
             Username = Settings.UpdaterServiceUsername;
+            HostKeyFingerprint = Settings.UpdaterServiceHostKeyFingerprint;
             LZMAStoragePath = Settings.UpdaterServiceLZMAStoragePath;
             ManifestStoragePath = Settings.UpdaterServiceManifestStoragePath;
             Password_TextBox.Password = Settings.DecryptUpdaterServicePassword();
             var pw = Settings.DecryptUpdaterServicePassword();
             SettingsExpanded = string.IsNullOrWhiteSpace(Username) ||
+                string.IsNullOrWhiteSpace(HostKeyFingerprint) ||
                 string.IsNullOrWhiteSpace(LZMAStoragePath) ||
                 string.IsNullOrWhiteSpace(ManifestStoragePath) ||
                 string.IsNullOrWhiteSpace(Password_TextBox.Password) ||
@@ -229,11 +233,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                     else
                     {
-                        if (SettingsExpanded)
-                        {
-                            CurrentActionText = M3L.GetString(M3L.string_enterUpdaterServiceSettings);
-                            SettingsSubtext = M3L.GetString(M3L.string_pressSaveToValidateSettings);
-                        }
+                        SettingsExpanded = true;
+                        CurrentActionText = M3L.GetString(M3L.string_enterUpdaterServiceSettings);
+                        SettingsSubtext = result as string ?? M3L.GetString(M3L.string_pressSaveToValidateSettings);
                     }
                 });
             }
@@ -265,6 +267,15 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             nbw.RunWorkerCompleted += (a, b) =>
             {
                 TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
+                if (b.Error != null)
+                {
+                    M3Log.Error(@"Updater service upload failed: " + b.Error.Message);
+                    CurrentActionText = M3L.GetString(M3L.string_uploadFailed);
+                    SettingsSubtext = b.Error.Message;
+                    SettingsExpanded = true;
+                    OperationInProgress = false;
+                    return;
+                }
                 TelemetryInterposer.TrackEvent(@"Uploaded mod to updater service", new Dictionary<string, string>()
                 {
                     {@"Result", b.Result?.ToString() },
@@ -281,28 +292,25 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             nbw.DoWork += (a, b) =>
             {
                 b.Result = false;
-                string host = @"ftp.me3tweaks.com";
                 string username = Username;
                 string password = pwOverride ?? Password_TextBox.Password;
                 if (string.IsNullOrWhiteSpace(password)) return;
 
-                using (SftpClient sftp = new SftpClient(host, username, password))
+                string currentOp = @"Connecting";
+                try
                 {
-                    string currentOp = @"Connecting";
-                    try
-                    {
-                        sftp.Connect();
-                        currentOp = M3L.GetString(M3L.string_checkingLZMAStorageDirectory);
-                        sftp.ChangeDirectory(LZMAStoragePath.Trim());
-                        currentOp = M3L.GetString(M3L.string_checkingManifestsStorageDirectory);
-                        sftp.ChangeDirectory(ManifestStoragePath.Trim());
-                        b.Result = true;
-                    }
-                    catch (Exception e)
-                    {
-                        M3Log.Information($@"Error logging in during operation '{currentOp}': " + e.Message);
-                        b.Result = M3L.GetString(M3L.string_interp_errorValidatingSettingsXY, currentOp, e.Message);
-                    }
+                    using SftpClient sftp = UpdaterServiceConnection.CreateSftpClient(username, password, HostKeyFingerprint);
+                    sftp.Connect();
+                    currentOp = M3L.GetString(M3L.string_checkingLZMAStorageDirectory);
+                    sftp.ChangeDirectory(LZMAStoragePath.Trim());
+                    currentOp = M3L.GetString(M3L.string_checkingManifestsStorageDirectory);
+                    sftp.ChangeDirectory(ManifestStoragePath.Trim());
+                    b.Result = true;
+                }
+                catch (Exception e)
+                {
+                    M3Log.Information($@"Error logging in during operation '{currentOp}': " + e.Message);
+                    b.Result = M3L.GetString(M3L.string_interp_errorValidatingSettingsXY, currentOp, e.Message);
                 }
             };
             nbw.RunWorkerCompleted += (a, b) =>
@@ -625,11 +633,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             CurrentActionText = M3L.GetString(M3L.string_connectingToME3TweaksUpdaterService);
             M3Log.Information(@"Connecting to ME3Tweaks as " + Username);
-            string host = @"ftp.me3tweaks.com";
             string username = Username;
             string password = Settings.DecryptUpdaterServicePassword();
 
-            using SftpClient sftp = new SftpClient(host, username, password);
+            using SftpClient sftp = UpdaterServiceConnection.CreateSftpClient(username, password, HostKeyFingerprint);
             sftp.Connect();
 
             M3Log.Information(@"Connected to ME3Tweaks over SSH (SFTP)");
@@ -656,7 +663,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             //Open SSH connection as we will need to hash files out afterwards.
             M3Log.Information(@"Connecting to ME3Tweaks Updater Service over SSH (SSH Shell)");
-            using SshClient sshClient = new SshClient(host, username, password);
+            using SshClient sshClient = UpdaterServiceConnection.CreateSshClient(username, password, HostKeyFingerprint);
             sshClient.Connect();
             M3Log.Information(@"Connected to ME3Tweaks Updater Service over SSH (SSH Shell)");
 
